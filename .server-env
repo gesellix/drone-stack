@@ -1,0 +1,10 @@
+DRONE_DEBUG=true
+DRONE_SECRET=changeit
+DRONE_HOST=http://example.com:8000
+#DRONE_PLUGIN_PULL=true
+DRONE_OPEN=true
+DRONE_ADMIN=gesellix
+# you need to create an OAuth App at: https://github.com/settings/developers
+DRONE_GITHUB=true
+DRONE_GITHUB_CLIENT=...
+DRONE_GITHUB_SECRET=...

@@ -1,0 +1,3 @@
+#DRONE_PLUGIN_PULL=true
+DRONE_SERVER=drone-server:9000
+DRONE_SECRET=changeit

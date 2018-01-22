@@ -1,0 +1,71 @@
+---
+version: '3.5'
+
+services:
+
+  drone-server:
+    image: "${DRONE_SERVER_IMAGE:-drone/drone:0.8}"
+    ports:
+      - 8000:8000
+    networks:
+      - drone
+    configs:
+      - source: server-env
+        target: /.env
+    volumes:
+      - drone-server-data:/var/lib/drone/
+    deploy:
+      placement:
+        constraints:
+          - node.role==worker
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+
+  drone-agent:
+    image: "${DRONE_AGENT_IMAGE:-drone/agent:0.8}"
+    command: agent
+    networks:
+      - drone
+#    depends_on:
+#      - drone-server
+    configs:
+      - source: agent-env
+        target: /.env
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    deploy:
+      placement:
+        constraints:
+          - node.role==worker
+      replicas: 3
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+      update_config:
+        parallelism: 1
+        delay: 20s
+
+networks:
+  drone:
+    driver: overlay
+
+configs:
+  server-env:
+    file: ./.server-env
+  agent-env:
+    file: ./.agent-env
+
+# see https://github.com/drone/drone/issues/2223
+#secrets:
+#  drone-secret:
+#    file: ./awesome-secret
+
+volumes:
+  drone-server-data:
+    external: true
